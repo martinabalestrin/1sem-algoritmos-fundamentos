@@ -1,0 +1,5 @@
+aluno nota1 nota2 nota3
+martina 10 9 7
+joao pedro 9 7 4
+lucas 3 8 10
+maria joaquina 7 6 9

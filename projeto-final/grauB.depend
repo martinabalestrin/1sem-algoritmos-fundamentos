@@ -1,0 +1,24 @@
+# depslib dependency file v1.0
+1719014461 source:c:\users\roberto\desktop\faculdade\sem1 - codeblocks\graub\main.c
+	<stdio.h>
+	<stdlib.h>
+	<string.h>
+	"tabela.h"
+
+1719014225 c:\users\roberto\desktop\faculdade\sem1 - codeblocks\graub\tabela.h
+
+1719014354 source:c:\users\roberto\desktop\faculdade\sem1 - codeblocks\graub\tabela.c
+	"tabela.h"
+
+1719362629 source:c:\users\roberto\desktop\algoritmos-fundamentos-1sem\projeto-final\main.c
+	<stdio.h>
+	<stdlib.h>
+	<string.h>
+	"tabela.c"
+
+1719362630 c:\users\roberto\desktop\algoritmos-fundamentos-1sem\projeto-final\tabela.c
+	<string.h>
+	"tabela.h"
+
+1719362631 c:\users\roberto\desktop\algoritmos-fundamentos-1sem\projeto-final\tabela.h
+
