@@ -1,5 +1,5 @@
 #include <string.h>
-#include "tabela.h"
+#include "../include/tabela.h"
 
 void adicionarProduto(produto *P, int *id, char descricao[], int estoque, float valor){
 
@@ -62,87 +62,153 @@ int mostrarEstoque(produto produtos[], int qntProduto) {
     }
 }
 
-void RegistraVenda(produto produtos[], int qntProduto, char nome[],compra compras[], int *qntCompras) {
+void RegistraVenda(produto produtos[], int qntProduto, char nome[], compra compras[], int *qntCompras) {
     int id = 0, quantidade = 0;
     float totalCompra = 0;
 
     do {
-        printf("Codigo do produto (0 para terminar): "); //Pergunta o id do produto
-        scanf("%d", &id);
+        printf("Codigo do produto (0 para terminar): ");
+        char codigo[10];
+        scanf("%s", codigo);
+
+        if (isdigit(codigo[0])){
+            id = atoi(codigo);
 
 
-        if (id > 0 && id <= qntProduto) { //verifica se o id informado bate com o de algum produto
-            printf("Quantidade desejada: "); // pergunta a quantidade de itens comprados
-            scanf("%d", &quantidade);
+            if (id > 0 && id <= qntProduto) { // verifica se o id informado existe
 
-            if (quantidade <= produtos[id-1].estoque) { // verifica se a quantidade de itens é menor ou igual a quantidade em estoque
-                float valorItem = produtos[id-1].valor * quantidade; // calcula o valor total da quantidade de itens desejados
-                printf("Total da compra: %.2f\n", valorItem); // Mostra o total da compra
+                do {
 
-                char confirmacao;
+                    printf("Quantidade desejada: "); // pergunta a quantidade de itens do produto selecionado
+                    char input[10];
+                    scanf("%s", input);
 
-                do{
-                    printf("Confirmar compra (s/n)? "); // pede para confirmar a compra
-                    scanf(" %c", &confirmacao);
+                    if (isdigit(input[0])) { // verifica se o valor informado para quantidade é um numro
+                        quantidade = atoi(input);
+                        if (quantidade <= produtos[id - 1].estoque) { // verifica se quantidade informada esta dentro do estoque
+                            float valorItem = produtos[id - 1].valor * quantidade; // calcula o valor da compra das n peças do produto
+                            printf("Total da compra: %.2f\n", valorItem);
 
-                    if (confirmacao == 's') {
-                        printf("\nCompra confirmada.\n\n");
+                            char confirmacao;
 
-                        produtos[id-1].estoque -= quantidade; // se a compra for confirmada diminui a quantidade do estoque
-                        totalCompra += valorItem;
+                            do {
+                                printf("Confirmar compra (s/n)? "); // solicita a confirmação da compra
+                                scanf(" %c", &confirmacao);
 
-                        // Registro da compra no vetor de compras
-                        strcpy(compras[*qntCompras].nomeCliente, nome);
-                        compras[*qntCompras].idProduto = id;
-                        compras[*qntCompras].quantidade = quantidade;
-                        compras[*qntCompras].valorTotal = valorItem;
-                        (*qntCompras)++; // Incrementa o contador de compras realizadas
-                    }else if(confirmacao == 'n'){
-                        printf("\nCompra nao confirmada.\n\n");
-                    }else{
-                        printf("\nOpcao invalida.\n\n");
+                                if (confirmacao == 's') {
+                                    printf("\nCompra confirmada.\n\n");
+                                    produtos[id - 1].estoque -= quantidade; // remove a quantidade de itens do estoque
+                                    totalCompra += valorItem; // atualiza o valor total da compra
+
+                                    // Registro da compra no vetor de compras
+                                    strcpy(compras[*qntCompras].nomeCliente, nome);
+                                    compras[*qntCompras].idProduto = id;
+                                    compras[*qntCompras].quantidade = quantidade;
+                                    compras[*qntCompras].valorTotal = valorItem;
+                                    (*qntCompras)++;
+                                } else if (confirmacao == 'n') {
+                                    printf("\nCompra nao confirmada.\n\n"); // mostra se a compra for negada
+                                } else {
+                                    printf("\nOpcao invalida.\n\n"); // mostra essa mensagem se a compra não for confirmada ou negada
+                                }
+
+                            } while (confirmacao != 's' && confirmacao != 'n'); // repete a confirmação aété a pessoa confirmar ou negar
+
+                        } else {
+                            printf("Quantidade insuficiente em estoque.\n"); // mostra essa mensagem se for selecionada uma quantidade que não tem em estoque
+                        }
+
+                    } else {
+                        printf("\nDigite um numero.\n\n"); // mostra essa mensagem se não for digitado um numero para a quantidade de produtos
                     }
 
-                }while(confirmacao != 's' && confirmacao != 'n');
+                } while (quantidade > produtos[id - 1].estoque || quantidade <= 0); // Repete a pergunta da quantidade de produtos comprados ate informar um valor valido
 
-            } else {
-                printf("Quantidade insuficiente em estoque.\n"); // mostra essa mensagem se a quantidade de itens desejados for maior do que disponivel no estoque
-            }
-        } else if(id < 0 || id > qntProduto) {
+        } else if (id < 0 || id > qntProduto) {
             printf("Produto nao encontrado.\n"); // mostra essa mensagem se o id informado não bater com algum produto
         }
-    }while(id != 0); // repete o codigo acima ate o valor da variavel id ser 0
+
+        }else {
+            printf("\nDigite um numero.\n\n"); // mostra essa mensagem se não for digitado um numero para a quantidade de produtos
+        }
+
+    } while (id != 0); // repete o codigo acima ate o valor da variavel id ser 0
 
     printf("Total da compra de %s eh: %.2f\n", nome, totalCompra); // mostra o nome da pessoa que comprou e o total da compra
 }
 
 void mostrarCompras(compra compras[], int qntCompras, produto produtos[], int qntProdutos) {
-    if (qntCompras == 0) {// Verifica se alguma compra foi realizada
-        printf("Nenhuma compra registrada.\n");// se nenhuma compra for realizada
+    if (qntCompras == 0) {//verifica se alguma compra foi registrada
+        printf("Nenhuma compra registrada.\n");
         return;
     }
-    //Cabeçalho de compras realizadas
+
+    //("%-25s", forma descoberta para deixar o print alinhado) mostra uma tabela
     printf("\n----- COMPRAS REALIZADAS -----\n\n");
-    printf("%-20s %-20s %-12s %-12s %-12s\n", "Nome do Cliente", "Descricao Produto", "Quantidade", "Valor Unitario", "Valor Total");
+    printf("%-25s %-30s %-15s %-15s %-15s\n", "Nome do Cliente", "Descricao Produto", "Quantidade", "Valor Unitario", "Valor Total");
 
-    float totalGeral = 0;//VAriavel para armazenar o total geral das compras
+    float totalGeral = 0; // Variável para armazenar o valor total de todas as compras
+    char clientesProcessados[100][50]; // Vetor para armazenar nomes de clientes processados para controle de repetição
+    int qntClientesProcessados = 0; // Contador para o número de clientes já processados
 
-    //loop para percorrree as compras registradas
+    // Itera sobre todas as compras registradas
     for (int i = 0; i < qntCompras; i++) {
         int idProduto = compras[i].idProduto;
-        printf("%-20s %-20s %-12d %-12.2f %-12.2f\n",
-        compras[i].nomeCliente,//nome cliente
-        produtos[idProduto - 1].descricao,//descrisao do produto
-        compras[i].quantidade,//quantidade comprada
-        produtos[idProduto - 1].valor,//valor unitario da compra
-        compras[i].valorTotal);//valor total da compra
-        totalGeral += compras[i].valorTotal;// Soma o valor total da compra atual ao total geral
+
+        // Imprime os detalhes da compra (nome do cliente, descrição do produto, quantidade, valor unitário, valor total)
+        printf("%-25s %-30s %-15d %-15.2f %-15.2f\n",
+               compras[i].nomeCliente, // nome cliente
+               produtos[idProduto - 1].descricao, // descricao do produto
+               compras[i].quantidade, // quantidade comprada
+               produtos[idProduto - 1].valor, // valor unitario da compra
+               compras[i].valorTotal); // valor total da compra
+
+        totalGeral += compras[i].valorTotal; // Soma o valor total da compra atual ao total geral
+
+        int jaProcessado = 0; // Variável para verificar se o cliente já foi processado anteriormente
+
+        // Verifica se o cliente já foi processado
+        for (int j = 0; j < qntClientesProcessados; j++) {
+            if (strcmp(compras[i].nomeCliente, clientesProcessados[j]) == 0) {
+                jaProcessado = 1;
+                break; // Se já foi processado, não precisa verificar mais
+            }
+        }
+
+        if (jaProcessado == 0) { // Se o cliente não foi processado
+            float totalPorCliente = 0; // Variável para armazenar o total de compras para o cliente atual
+
+            // Calcula o total de compras para o cliente atual
+            for (int j = 0; j < qntCompras; j++) {
+                if (strcmp(compras[i].nomeCliente, compras[j].nomeCliente) == 0) {
+                    totalPorCliente += compras[j].valorTotal;
+                }
+            }
+
+            // Adiciona o cliente ao vetor de processados
+            strcpy(clientesProcessados[qntClientesProcessados], compras[i].nomeCliente);
+            qntClientesProcessados++;
+        }
     }
 
     // Imprime o total geral de todas as compras
     printf("\nTotal Geral das Compras: %.2f\n", totalGeral);
-}
 
+    // Imprime o total de compras por cliente
+    printf("\n----- TOTAL DE COMPRAS POR CLIENTE -----\n\n");
+    for (int i = 0; i < qntClientesProcessados; i++) {
+        float totalPorCliente = 0;
+
+        // Calcula o total de compras para o cliente atual
+        for (int j = 0; j < qntCompras; j++) {
+            if (strcmp(clientesProcessados[i], compras[j].nomeCliente) == 0) {
+                totalPorCliente += compras[j].valorTotal;
+            }
+        }
+
+        printf("Cliente: %s - Gastou ao total: %.2f\n", clientesProcessados[i], totalPorCliente);
+    }
+}
 
 int reporEstoque(produto produtos[], int qntProduto, int id) {
     int quantidade; //variavel para armazenar a quantidade que sera adicionada ao estoque
@@ -159,4 +225,45 @@ int reporEstoque(produto produtos[], int qntProduto, int id) {
     return 0;
 }
 
+int maiorVenda(compra compras[], int qntCompras, produto produtos[], int qntProdutos){
+
+    if(qntCompras == 0){ //verifica se ocorreu alguma venda até o momento
+        printf("Nenhuma compra foi realizada\n");
+        return 0;
+    }
+
+    int indiceMaiorVenda = 0; //variável para armazenar o índice que está a maior venda
+    for(int i = 0; i < qntCompras; i++){//itera todas as compras
+        if(compras[i].valorTotal > compras[indiceMaiorVenda].valorTotal){ //confere se o valor da compra iterada é maior que o valor da compra armazenada no índice atualmente
+            indiceMaiorVenda = i; //armazena o índice da maior venda
+        }
+    }
+
+    compra maiorCompra = compras[indiceMaiorVenda]; // armazena os dados da maior venda encontrada
+    char clienteMaiorVenda[50]; //variável para armazenar o nome do cliente da maior venda
+    float valorTotalCompra = 0.0; //variável para armazenar o valor total da compra
+    strcpy(clienteMaiorVenda, maiorCompra.nomeCliente); //copia o nome do cliente da maior venda para a variável clienteMaiorVenda
+
+    //exibe as informacoes sobre a maior compra
+    printf("Maior compra \n");
+    printf("Cliente: %s\n", maiorCompra.nomeCliente);
+
+    //cabeçalho da tabela de itens comprados
+    printf("Itens comprados:\n");
+    printf("%-20s %-12s %-12s %-12s\n", "Descricao Produto", "Quantidade", "Valor Unitario", "Valor Total");
+
+    //loop para exibir os itens comprados na maior venda
+    for (int i = 0; i < qntCompras; i++){
+        //verifica se o item foi comprado pelo cliente da maior venda
+        if (strcmp(compras[i].nomeCliente, maiorCompra.nomeCliente) == 0) {
+            int idProduto = compras[i].idProduto; //armazena o id do produto
+            float valorTotalProduto = compras[i].quantidade * produtos[idProduto - 1].valor; //calcula o valor total do produto
+            //exibe os detalhes do produto
+            printf("%-20s %-12d %-12.2f %-12.2f\n", produtos[idProduto - 1].descricao, compras[i].quantidade, produtos[idProduto - 1].valor, valorTotalProduto);
+            valorTotalCompra += valorTotalProduto; //soma o valor  total do produto ao valor total da compra
+        }
+    }
+    //exibe o valor total da compra do maior cliente
+    printf("Valor total da compra: %.2f\n", valorTotalCompra);
+}
 
