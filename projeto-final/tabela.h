@@ -29,7 +29,7 @@ int mostrarEstoque(produto produtos[], int qntProduto);//Mostrar estoque
 
 void mostrarCompras(compra compras[], int qntCompras, produto produtos[],int qntProdutos); //Mostrar compras
 
-int maiorCompra(); //maior compra
+int maiorVenda(compras, qntCompras, produtos, qntProduto);; //maior compra
 
 void adicionarProduto(produto *P, int *id, char descricao[], int estoque, float valor); //Adicionar mais produtos
 
