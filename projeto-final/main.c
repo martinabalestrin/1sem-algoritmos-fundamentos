@@ -1,12 +1,12 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include "tabela.c"
+#include "../include/tabela.h"
 
 
 int main() {
     //variavel do menu
-    int opcao;
+    char opcao;
 
     int qntProduto = 0; //Variavel para armazenar a quantidade de produtos
     int qntCompras = 0; //Variavel para armazenar a quantidade de compras
@@ -21,19 +21,21 @@ int main() {
     inicializarProdutos(produtos, &qntProduto); //inicializa os produtos já conhecidos
 
     do {
+        fflush(stdin);
         printf("---------- Menu ----------\n\n");
-        printf("1. Registrar venda (feito)\n");
-        printf("2. Repor estoque (feito)\n");
-        printf("3. Mostrar estoque (feito)\n");
-        printf("4. Mostrar compras (feito)\n");
+        printf("1. Registrar venda\n");
+        printf("2. Repor estoque\n");
+        printf("3. Mostrar estoque\n");
+        printf("4. Mostrar compras\n");
         printf("5. Maior compra\n");
-        printf("6. Adicionar mais produtos (feito)\n");
+        printf("6. Adicionar mais produtos\n");
         printf("7. Sair\n");
         printf("\nEscolha uma opcao: ");
-        scanf("%d", &opcao);
+
+        scanf("%s", &opcao);
 
         switch (opcao) {
-            case 1:
+            case '1':
                 system("cls"); // apaga o que já foi escrito
 
                 char nomeCliente[50]; // define a variavel do nome do cliente
@@ -47,7 +49,7 @@ int main() {
 
                 printf("\n");
                 break;
-            case 2:
+            case '2':
                 system("cls"); // apaga o que já foi escrito
 
                 int id; //variavel que ira armazenar o id do produto que a pessoa quer repor
@@ -59,23 +61,24 @@ int main() {
 
                 printf("\n");
                 break;
-            case 3:
+            case  '3':
                 system("cls"); // apaga o que já foi escrito
                 mostrarEstoque(produtos, qntProduto);
                 printf("\n");
                 break;
-            case 4:
+            case '4':
                 system("cls"); // apaga o que ja foi escrito
                 printf("\n");
                 mostrarCompras(compras, qntCompras, produtos, qntProduto);
                 printf("\n");
                 break;
-            case 5:
-                printf("\n");
-                //maior_compra();
+            case '5':
+                printf("\n"); // apaga o que ja foi escrito
+                system("cls");
+                maiorVenda(compras, qntCompras, produtos, qntProduto);
                 printf("\n");
                 break;
-            case 6:
+            case '6':
                 system("cls"); // apaga o que já foi escrito
 
                 printf("Qual o nome do novo produto? ");
@@ -93,7 +96,7 @@ int main() {
 
                 printf("\nProduto adicionado com sucesso!\n");
                 break;
-            case 7:
+            case '7':
                 printf("\n");
                 printf("Saindo...");
                 printf("\n");
@@ -104,7 +107,7 @@ int main() {
                 printf("\n");
                 break;
         }
-    } while (opcao != 7);
+    } while (opcao != '7');
 
     return 0;
 }
